@@ -1,7 +1,9 @@
 angular.module('ui.bootstrap.rating', [])
 
 .constant('ratingConfig', {
-  max: 5
+  max: 5,
+  iconFull: 'icon-star',
+  iconEmpty: 'icon-star-empty'
 })
 
 .directive('rating', ['ratingConfig', '$parse', function(ratingConfig, $parse) {
@@ -12,11 +14,16 @@ angular.module('ui.bootstrap.rating', [])
       onHover: '&',
       onLeave: '&'
     },
-    templateUrl: 'template/rating/rating.html',
+    template: '<span ng-mouseleave="reset()">' +
+              '<i ng-repeat="number in range" ng-mouseenter="enter(number)" ng-click="rate(number)" ng-class="{\'{{iconFull}}\': number <= val, \'{{iconEmpty}}\': number > val}"></i>' +
+              '</span>',
     replace: true,
     link: function(scope, element, attrs) {
 
       var maxRange = angular.isDefined(attrs.max) ? scope.$parent.$eval(attrs.max) : ratingConfig.max;
+
+      scope.iconFull =  angular.isDefined(attrs.iconFull) ? attrs.iconFull : ratingConfig.iconFull;
+      scope.iconEmpty =  angular.isDefined(attrs.iconEmpty) ? attrs.iconEmpty : ratingConfig.iconEmpty;
 
       scope.range = [];
       for (var i = 1; i <= maxRange; i++) {

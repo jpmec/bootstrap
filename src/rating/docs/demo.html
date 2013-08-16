@@ -1,6 +1,34 @@
 <div ng-controller="RatingDemoCtrl">
+    <rating value="rate"></rating>
+    <hr/>
+    <pre>Rate: <b>{{rate}}</b></pre>
+
+    <hr/>
+    <button class="btn btn-small btn-danger" ng-click="rate = 0" ng-disabled="isReadonly">Clear</button>
+</div>
+
+<hr/>
+
+<div ng-controller="RatingDemoCtrl">
     <rating value="rate" max="max" readonly="isReadonly" on-hover="hoveringOver(value)" on-leave="overStar = null"></rating>
     <span class="badge badge-inverse" ng-show="overStar && !isReadonly">{{overStar}} / {{max}}</span>
+
+    <hr/>
+    <pre>Rate: <b>{{rate}}</b> - Readonly is: <i>{{isReadonly}}</i> - Hovering over: <b>{{overStar || "none"}}</b></pre>
+
+    <hr/>
+    <button class="btn btn-small btn-danger" ng-click="rate = 0" ng-disabled="isReadonly">Clear</button>
+    <button class="btn btn-small" ng-click="isReadonly = ! isReadonly">Toggle Readonly</button>
+</div>
+
+<hr/>
+
+<div ng-controller="RatingDemoCtrl">
+
+    <div style="border: solid 1px #CCCCCC; background: #FCDFFF; padding: 6px 10px; -moz-border-radius: 3px; -webkit-border-radius: 3px; border-radius: 3px;">
+      <rating value="rate" max="max" icon-full="icon-heart" icon-empty="icon-heart icon-white" readonly="isReadonly" on-hover="hoveringOver(value)" on-leave="overStar = null"></rating>
+      <span class="badge badge-inverse" ng-show="overStar && !isReadonly">{{overStar}} / {{max}}</span>
+    </div>
 
     <hr/>
     <pre>Rate: <b>{{rate}}</b> - Readonly is: <i>{{isReadonly}}</i> - Hovering over: <b>{{overStar || "none"}}</b></pre>
