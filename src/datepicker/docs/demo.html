@@ -25,6 +25,18 @@
         </div>
     </div>
 
+    <h4>Minimal Popup</h4>
+    <div class="row">
+        <div class="col-md-6">
+            <p class="input-group">
+              <input type="text" class="form-control" datepicker-popup="{{format}}" ng-model="dt" is-open="minimalOpened" min="minDate" max="'2015-06-22'" datepicker-options="dateOptions" date-disabled="disabled(date, mode)" ng-required="true" close-text="&times" show-weeks="false" current-text="" toggle-weeks-text="" clear-text="" />
+              <span class="input-group-btn">
+                <button class="btn btn-default" ng-click="openMinimal($event)"><i class="glyphicon glyphicon-calendar"></i></button>
+              </span>
+            </p>
+        </div>
+    </div>
+
     <hr />
     <button class="btn btn-sm btn-info" ng-click="today()">Today</button>
     <button class="btn btn-sm btn-default" ng-click="dt = '2009-08-24'">2009-08-24</button>

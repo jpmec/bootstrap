@@ -30,6 +30,13 @@ var DatepickerDemoCtrl = function ($scope) {
     $scope.opened = true;
   };
 
+  $scope.openMinimal = function($event) {
+    $event.preventDefault();
+    $event.stopPropagation();
+
+    $scope.minimalOpened = true;
+  };
+
   $scope.dateOptions = {
     'year-format': "'yy'",
     'starting-day': 1
