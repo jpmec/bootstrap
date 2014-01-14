@@ -2,63 +2,86 @@ angular.module('ui.bootstrap.rating', [])
 
 .constant('ratingConfig', {
   max: 5,
-  iconFull: 'icon-star',
-  iconEmpty: 'icon-star-empty'
+  stateOn: null,
+  stateOff: null
 })
 
-.directive('rating', ['ratingConfig', '$parse', function(ratingConfig, $parse) {
+.controller('RatingController', ['$scope', '$attrs', '$parse', 'ratingConfig', function($scope, $attrs, $parse, ratingConfig) {
+  var ngModelCtrl  = {$setViewValue: angular.noop};
+
+  this.maxRange = angular.isDefined($attrs.max) ? $scope.$parent.$eval($attrs.max) : ratingConfig.max;
+  this.stateOn = angular.isDefined($attrs.stateOn) ? $scope.$parent.$eval($attrs.stateOn) : ratingConfig.stateOn;
+  this.stateOff = angular.isDefined($attrs.stateOff) ? $scope.$parent.$eval($attrs.stateOff) : ratingConfig.stateOff;
+  
+  this.init = function(ngModelCtrl_) {
+    ngModelCtrl = ngModelCtrl_;
+    ngModelCtrl.$render = this.render;
+    
+     $scope.range = this.buildTemplateObjects(
+      angular.isDefined($attrs.ratingStates) ? $scope.$parent.$eval($attrs.ratingStates) : new Array(this.maxRange)
+    );
+  };
+
+  this.buildTemplateObjects = function(states) {
+    var defaultOptions = {
+      stateOn: this.stateOn,
+      stateOff: this.stateOff
+    };
+
+    for (var i = 0, n = states.length; i < n; i++) {
+      states[i] = angular.extend({ index: i }, defaultOptions, states[i]);
+    }
+    return states;
+  };
+
+  $scope.rate = function(value) {
+    if ( !$scope.readonly ) {
+      ngModelCtrl.$setViewValue(value);
+      ngModelCtrl.$render();
+    }
+  };
+
+  $scope.enter = function(value) {
+    if ( ! $scope.readonly ) {
+      $scope.val = value;
+    }
+    $scope.onHover({value: value});
+  };
+
+  $scope.reset = function() {
+    $scope.val = ngModelCtrl.$viewValue;
+    $scope.onLeave();
+  };
+  
+  this.render = function() {
+    $scope.val = ngModelCtrl.$viewValue;
+  };
+
+  $scope.readonly = false;
+  if ($attrs.readonly) {
+    $scope.$parent.$watch($parse($attrs.readonly), function(value) {
+      $scope.readonly = !!value;
+    });
+  }
+}])
+
+.directive('rating', function() {
   return {
     restrict: 'EA',
+    require: ['rating', 'ngModel'],
     scope: {
-      value: '=',
       onHover: '&',
       onLeave: '&'
     },
-    template: '<span ng-mouseleave="reset()">' +
-              '<i ng-repeat="number in range" ng-mouseenter="enter(number)" ng-click="rate(number)" ng-class="{\'{{iconFull}}\': number <= val, \'{{iconEmpty}}\': number > val}"></i>' +
-              '</span>',
+    controller: 'RatingController',
+    templateUrl: 'template/rating/rating.html',
     replace: true,
-    link: function(scope, element, attrs) {
+    link: function(scope, element, attrs, ctrls) {
+      var ratingCtrl = ctrls[0], ngModelCtrl = ctrls[1];
 
-      var maxRange = angular.isDefined(attrs.max) ? scope.$parent.$eval(attrs.max) : ratingConfig.max;
-
-      scope.iconFull =  angular.isDefined(attrs.iconFull) ? attrs.iconFull : ratingConfig.iconFull;
-      scope.iconEmpty =  angular.isDefined(attrs.iconEmpty) ? attrs.iconEmpty : ratingConfig.iconEmpty;
-
-      scope.range = [];
-      for (var i = 1; i <= maxRange; i++) {
-          scope.range.push(i);
-      }
-
-      scope.rate = function(value) {
-          if ( ! scope.readonly ) {
-              scope.value = value;
-          }
-      };
-
-      scope.enter = function(value) {
-          if ( ! scope.readonly ) {
-              scope.val = value;
-          }
-          scope.onHover({value: value});
-      };
-
-      scope.reset = function() {
-          scope.val = angular.copy(scope.value);
-          scope.onLeave();
-      };
-      scope.reset();
-
-      scope.$watch('value', function(value) {
-          scope.val = value;
-      });
-
-      scope.readonly = false;
-      if (attrs.readonly) {
-          scope.$parent.$watch($parse(attrs.readonly), function(value) {
-              scope.readonly = !!value;
-          });
+      if ( ngModelCtrl ) {
+        ratingCtrl.init( ngModelCtrl );
       }
     }
   };
-}]);
+});
